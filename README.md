@@ -66,5 +66,5 @@ Originally created by [Arkshine](https://github.com/Arkshine/AdminFreeLook).
 5. Open your *configs/modules.ini* and add at the end `refreelook`
 6. Configure `mp_forcechasecam` and `mp_forcecamera` gameplay cvars. Both should have the same value.
 7. Make sure `mp_fadetoblack` is set to 0.
-8. Configure `afl_admin_access_flags` and `afl_user_override_mode` modules cvars.
+8. Configure `afl_admin_access_flags` modules cvar.
 9. Start your server.
