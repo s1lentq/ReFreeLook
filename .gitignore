@@ -7,4 +7,5 @@ msvc/*.suo
 msvc/*.aps
 msvc/Server*.bat
 msvc/ipch
+publish
 PublishPath*.txt
