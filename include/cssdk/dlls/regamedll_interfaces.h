@@ -49,10 +49,12 @@ class CCSMonster: public CCSToggle {};
 class CCSWeaponBox: public CCSEntity {};
 class CCSArmoury: public CCSEntity {};
 
-#pragma warning(disable:4351)		// new behavior: elements of array 'CCSPlayer::m_szModel' will be default initialized
 class CCSPlayer: public CCSMonster {
 public:
-	CCSPlayer() : m_szModel() {}
+	CCSPlayer()
+	{
+		m_szModel[0] = '\0';
+	}
 
 	virtual bool IsConnected() const;
 	virtual void SetAnimation(PLAYER_ANIM playerAnim);
@@ -65,9 +67,22 @@ public:
 	virtual void DropPlayerItem(const char *pszItemName);
 	virtual void RemoveShield();
 	virtual void RemoveAllItems(bool bRemoveSuit);
+	virtual bool RemovePlayerItem(const char* pszItemName);
 	virtual void SetPlayerModel(bool bHasC4);
 	virtual void SetPlayerModelEx(const char *modelName);
 	virtual void SetNewPlayerModel(const char *modelName);
+	virtual void ClientCommand(const char *cmd, const char *arg1 = nullptr, const char *arg2 = nullptr, const char *arg3 = nullptr);
+	virtual void SetProgressBarTime(int time);
+	virtual void SetProgressBarTime2(int time, float timeElapsed);
+	virtual struct edict_s *EntSelectSpawnPoint();
+	virtual void SetBombIcon(bool bFlash = false);
+	virtual void SetScoreAttrib(CBasePlayer *dest);
+	virtual void SendItemStatus();
+	virtual void ReloadWeapons(CBasePlayerItem *pWeapon = nullptr, bool bForceReload = false, bool bForceRefill = false);
+	virtual void Observer_SetMode(int iMode);
+	virtual bool SelectSpawnSpot(const char *pEntClassName, CBaseEntity* &pSpot);
+	virtual bool SwitchWeapon(CBasePlayerItem *pWeapon);
+	virtual void SwitchTeam();
 
 	CBasePlayer *BasePlayer() const;
 public:

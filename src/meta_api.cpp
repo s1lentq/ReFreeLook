@@ -8,7 +8,7 @@ plugin_info_t Plugin_info =
 {
 	META_INTERFACE_VERSION,			// ifvers
 	"ReFreeLook",				// name
-	"1.6",					// version
+	"1.7",					// version
 	__DATE__,				// date
 	"s1lent",				// author
 	"http://www.dedicated-server.ru",	// url

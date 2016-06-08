@@ -1,25 +1,44 @@
 NAME = refreelook
-COMPILER = clang
+#COMPILER = clang
+COMPILER = /opt/intel/bin/icpc
 CSSDK = include/cssdk
 
 OBJECTS = src/main.cpp src/meta_api.cpp src/h_export.cpp src/amxxmodule.cpp src/mod_regamedll_api.cpp\
 	src/sdk_util.cpp $(CSSDK)/public/interface.cpp\
 
-LINK = -lm -ldl -static-libgcc -Wno-return-type-c-linkage -fPIC
+LINK = -lm -ldl -static-libgcc
+
+ifeq "$(COMPILER)" "clang"
+	LINK += -Wno-return-type-c-linkage -fPIC
+else
+	LINK += -static-intel -no-intel-extensions
+endif
 
 METAMOD = include/metamod
 
-OPT_FLAGS = -O3 -msse3 -funroll-loops -fomit-frame-pointer -fno-stack-protector -g -fwritable-strings -Wreturn-type-c-linkage
+OPT_FLAGS = -O3 -msse3 -funroll-loops -fomit-frame-pointer -fno-stack-protector -g
+ifeq "$(COMPILER)" "clang"
+	OPT_FLAGS += -fwritable-strings -Wreturn-type-c-linkage
+else
+	OPT_FLAGS += -no-prec-div
+endif
 
 INCLUDE = -I. -Isrc -I$(CSSDK)/common -I$(CSSDK)//dlls -I$(CSSDK)/engine -I$(CSSDK)/pm_shared -I$(CSSDK)/public -I$(METAMOD) -I$(CSSDK)/game_shared
+
+
 
 BIN_DIR = Release
 CFLAGS = $(OPT_FLAGS)
 
 CFLAGS += -g0 -fvisibility=hidden -DNOMINMAX -fvisibility-inlines-hidden\
 	-DNDEBUG -Dlinux -D__linux__ -std=c++11 -shared -fasm-blocks\
-	-fno-rtti -D_bswap16=__builtin_bswap16 -D_bswap=bswap\
-	-D_bswap64=__builtin_bswap64 -D_vsnprintf=vsnprintf
+	-fno-rtti -D_vsnprintf=vsnprintf
+
+ifeq "$(COMPILER)" "clang"
+	CFLAGS += -D_bswap16=__builtin_bswap16 -D_bswap=bswap -D_bswap64=__builtin_bswap64
+else
+	CFLAGS += -Qoption,cpp,--treat_func_as_string_literal_cpp
+endif
 
 OBJ_LINUX := $(OBJECTS:%.c=$(BIN_DIR)/%.o)
 

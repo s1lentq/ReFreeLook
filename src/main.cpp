@@ -16,7 +16,7 @@ inline bool ShouldRunCode()
 }
 
 inline bool canFreeLook(const int nIndex) {
-	return (UTIL_ReadFlags(pcv_admin_access_flags->string) & g_amxxapi.GetPlayerFlags(nIndex));
+	return (UTIL_ReadFlags(pcv_admin_access_flags->string) & g_amxxapi.GetPlayerFlags(nIndex)) != 0;
 }
 
 int GetForceCamera(IReGameHook_GetForceCamera *chain, CBasePlayer *pObserver)
@@ -34,7 +34,7 @@ CBasePlayer *CBasePlayer_Observer_IsValidTarget(IReGameHook_CBasePlayer_Observer
 {
 	if (ShouldRunCode()) {
 		// go next hook and call the original in the end
-		return chain->callNext(iPlayerIndex, bSameTeam);
+		return chain->callNext(pthis, iPlayerIndex, bSameTeam);
 	}
 
 	if (iPlayerIndex > gpGlobals->maxClients || iPlayerIndex < 1)
