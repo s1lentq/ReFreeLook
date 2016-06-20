@@ -51,7 +51,7 @@ class CCSArmoury: public CCSEntity {};
 
 class CCSPlayer: public CCSMonster {
 public:
-	CCSPlayer()
+	CCSPlayer() : m_bForceShowMenu(false)
 	{
 		m_szModel[0] = '\0';
 	}
@@ -83,10 +83,14 @@ public:
 	virtual bool SelectSpawnSpot(const char *pEntClassName, CBaseEntity* &pSpot);
 	virtual bool SwitchWeapon(CBasePlayerItem *pWeapon);
 	virtual void SwitchTeam();
+	virtual bool JoinTeam(TeamName team);
+	virtual void StartObserver(Vector& vecPosition, Vector& vecViewAngle);
+	virtual void TeamChangeUpdate();
 
 	CBasePlayer *BasePlayer() const;
 public:
 	char m_szModel[32];
+	bool m_bForceShowMenu;
 };
 
 class CAPI_Bot: public CCSPlayer {};

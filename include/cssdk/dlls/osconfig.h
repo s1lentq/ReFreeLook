@@ -111,7 +111,6 @@
 	typedef unsigned int uchar32;
 #endif
 #else // _WIN32
-#ifndef __CLANG_STDINT_H
 	typedef unsigned long long uint64_t;
 	typedef unsigned int uint32_t;
 	typedef unsigned short uint16_t;
@@ -123,7 +122,7 @@
 		typedef short int16_t;
 		typedef char int8_t;
 	#endif
-#endif
+
 	typedef unsigned char byte;
 	typedef unsigned char BYTE;
 	typedef unsigned short uchar16;
@@ -201,3 +200,4 @@
 #define C_DLLEXPORT extern "C" DLLEXPORT
 
 #define EXT_FUNC /*FORCE_STACK_ALIGN*/
+#define EXT_ALIGN FORCE_STACK_ALIGN

@@ -8,7 +8,7 @@ plugin_info_t Plugin_info =
 {
 	META_INTERFACE_VERSION,			// ifvers
 	"ReFreeLook",				// name
-	"1.7",					// version
+	"1.8",					// version
 	__DATE__,				// date
 	"s1lent",				// author
 	"http://www.dedicated-server.ru",	// url
@@ -41,11 +41,6 @@ C_DLLEXPORT int Meta_Attach(PLUG_LOADTIME now, META_FUNCTIONS *pFunctionTable, m
 {
 	gpMetaGlobals = pMGlobals;
 	gpGamedllFuncs = pGamedllFuncs;
-
-	if (!OnMetaAttach())
-	{
-		return FALSE;
-	}
 
 	memcpy(pFunctionTable, &gMetaFunctionTable, sizeof(META_FUNCTIONS));
 	return TRUE;
