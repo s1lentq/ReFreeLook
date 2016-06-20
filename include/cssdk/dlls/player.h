@@ -67,13 +67,15 @@
 // NOTE: It works for CZ
 #define MONEY_BLINK_AMOUNT		30
 
+// Player physics flags bits
+// CBasePlayer::m_afPhysicsFlags
 #define PFLAG_ONLADDER			(1<<0)
 #define PFLAG_ONSWING			(1<<0)
 #define PFLAG_ONTRAIN			(1<<1)
 #define PFLAG_ONBARNACLE		(1<<2)
-#define PFLAG_DUCKING			(1<<3)
-#define PFLAG_USING			(1<<4)
-#define PFLAG_OBSERVER			(1<<5)
+#define PFLAG_DUCKING			(1<<3)	// In the process of ducking, but totally squatted yet
+#define PFLAG_USING			(1<<4)	// Using a continuous entity
+#define PFLAG_OBSERVER			(1<<5)	// player is locked in stationary cam mode. Spectators can move, observers can't.
 
 #define TRAIN_OFF			0x00
 #define TRAIN_NEUTRAL			0x01
@@ -148,7 +150,7 @@ enum RewardType
 	RT_VIP_RESCUED_MYSELF
 };
 
-typedef enum
+enum PLAYER_ANIM
 {
 	PLAYER_IDLE,
 	PLAYER_WALK,
@@ -161,10 +163,9 @@ typedef enum
 	PLAYER_LARGE_FLINCH,
 	PLAYER_RELOAD,
 	PLAYER_HOLDBOMB
+};
 
-} PLAYER_ANIM;
-
-typedef enum
+enum _Menu
 {
 	Menu_OFF,
 	Menu_ChooseTeam,
@@ -181,19 +182,17 @@ typedef enum
 	Menu_Radio2,
 	Menu_Radio3,
 	Menu_ClientBuy
+};
 
-} _Menu;
-
-typedef enum
+enum TeamName
 {
 	UNASSIGNED,
 	TERRORIST,
 	CT,
 	SPECTATOR,
+};
 
-} TeamName;
-
-typedef enum
+enum ModelName
 {
 	MODEL_UNASSIGNED,
 	MODEL_URBAN,
@@ -206,11 +205,11 @@ typedef enum
 	MODEL_GUERILLA,
 	MODEL_VIP,
 	MODEL_MILITIA,
-	MODEL_SPETSNAZ
+	MODEL_SPETSNAZ,
+	MODEL_AUTO
+};
 
-} ModelName;
-
-typedef enum
+enum JoinState
 {
 	JOINED,
 	SHOWLTEXT,
@@ -218,10 +217,9 @@ typedef enum
 	SHOWTEAMSELECT,
 	PICKINGTEAM,
 	GETINTOGAME
+};
 
-} JoinState;
-
-typedef enum
+enum TrackCommands
 {
 	CMD_SAY = 0,
 	CMD_SAYTEAM,
@@ -232,10 +230,9 @@ typedef enum
 	CMD_LISTPLAYERS,
 	CMD_NIGHTVISION,
 	COMMANDS_TO_TRACK,
+};
 
-} TrackCommands;
-
-typedef struct
+struct RebuyStruct
 {
 	int m_primaryWeapon;
 	int m_primaryAmmo;
@@ -246,11 +243,10 @@ typedef struct
 	int m_smokeGrenade;
 	int m_defuser;
 	int m_nightVision;
-	int m_armor;
+	ArmorType m_armor;
+};
 
-} RebuyStruct;
-
-typedef enum
+enum ThrowDirection
 {
 	THROW_NONE,
 	THROW_FORWARD,
@@ -259,8 +255,7 @@ typedef enum
 	THROW_BOMB,
 	THROW_GRENADE,
 	THROW_HITVEL_MINUS_AIRVEL
-
-} ThrowDirection;
+};
 
 enum sbar_data
 {
@@ -270,13 +265,7 @@ enum sbar_data
 	SBAR_END
 };
 
-typedef enum
-{
-	SILENT,
-	CALM,
-	INTENSE
-
-} MusicState;
+enum MusicState { SILENT, CALM, INTENSE };
 
 class CCSPlayer;
 
@@ -320,8 +309,8 @@ public:
 	virtual int ObjectCaps() = 0;
 	virtual int Classify() = 0;
 	virtual void TraceAttack(entvars_t *pevAttacker, float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType) = 0;
-	virtual int TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType) = 0;
-	virtual int TakeHealth(float flHealth, int bitsDamageType) = 0;
+	virtual BOOL TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType) = 0;
+	virtual BOOL TakeHealth(float flHealth, int bitsDamageType) = 0;
 	virtual void Killed(entvars_t *pevAttacker, int iGib) = 0;
 	virtual void AddPoints(int score, BOOL bAllowNegativeScore) = 0;
 	virtual void AddPointsToTeam(int score, BOOL bAllowNegativeScore) = 0;
@@ -353,6 +342,10 @@ public:
 	virtual void Blind(float flUntilTime, float flHoldTime, float flFadeTime, int iAlpha) = 0;
 	virtual void OnTouchingWeapon(CWeaponBox *pWeapon) = 0;
 public:
+	static CBasePlayer *Instance(edict_t *pent) { return (CBasePlayer *)GET_PRIVATE(pent ? pent : ENT(0)); }
+	static CBasePlayer *Instance(entvars_t *pev) { return Instance(ENT(pev)); }
+	static CBasePlayer *Instance(int offset) { return Instance(ENT(offset)); }
+
 	int IsObserver() { return pev->iuser1; }
 	void SetWeaponAnimType(const char *szExtention) { strcpy(m_szAnimExtention, szExtention); }
 	bool IsProtectedByShield() { return m_bOwnsShield && m_bShieldDrawn; }
@@ -382,7 +375,7 @@ public:
 	int m_iLastZoom;
 	bool m_bResumeZoom;
 	float m_flEjectBrass;
-	int m_iKevlar;
+	ArmorType m_iKevlar;
 	bool m_bNotKilled;
 	TeamName m_iTeam;
 	int m_iAccount;

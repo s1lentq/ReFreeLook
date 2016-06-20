@@ -32,8 +32,10 @@
 #include "interface.h"
 #include "player.h"
 #include "gamerules.h"
+#include "client.h"
+#include "items.h"
 
-#define REGAMEDLL_API_VERSION_MAJOR 3
+#define REGAMEDLL_API_VERSION_MAJOR 4
 #define REGAMEDLL_API_VERSION_MINOR 1
 
 // CBasePlayer::Spawn hook
@@ -57,12 +59,12 @@ typedef IVoidHookChainClass<class CBasePlayer, struct entvars_s *, float, Vector
 typedef IVoidHookChainRegistryClass<class CBasePlayer, struct entvars_s *, float, Vector &, struct TraceResult *, int> IReGameHookRegistry_CBasePlayer_TraceAttack;
 
 // CBasePlayer::TakeDamage hook
-typedef IHookChainClass<int, class CBasePlayer, struct entvars_s *, struct entvars_s *, float&, int> IReGameHook_CBasePlayer_TakeDamage;
-typedef IHookChainRegistryClass<int, class CBasePlayer, struct entvars_s *, struct entvars_s *, float&, int> IReGameHookRegistry_CBasePlayer_TakeDamage;
+typedef IHookChainClass<BOOL, class CBasePlayer, struct entvars_s *, struct entvars_s *, float&, int> IReGameHook_CBasePlayer_TakeDamage;
+typedef IHookChainRegistryClass<BOOL, class CBasePlayer, struct entvars_s *, struct entvars_s *, float&, int> IReGameHookRegistry_CBasePlayer_TakeDamage;
 
 // CBasePlayer::TakeHealth hook
-typedef IHookChainClass<int, class CBasePlayer, float, int> IReGameHook_CBasePlayer_TakeHealth;
-typedef IHookChainRegistryClass<int, class CBasePlayer, float, int> IReGameHookRegistry_CBasePlayer_TakeHealth;
+typedef IHookChainClass<BOOL, class CBasePlayer, float, int> IReGameHook_CBasePlayer_TakeHealth;
+typedef IHookChainRegistryClass<BOOL, class CBasePlayer, float, int> IReGameHookRegistry_CBasePlayer_TakeHealth;
 
 // CBasePlayer::Killed hook
 typedef IVoidHookChainClass<class CBasePlayer, struct entvars_s *, int> IReGameHook_CBasePlayer_Killed;
@@ -124,7 +126,6 @@ typedef IVoidHookChainRegistryClass<class CBasePlayer> IReGameHookRegistry_CBase
 typedef IVoidHookChainClass<class CBasePlayer, float, float, float, int> IReGameHook_CBasePlayer_Blind;
 typedef IVoidHookChainRegistryClass<class CBasePlayer, float, float, float, int> IReGameHookRegistry_CBasePlayer_Blind;
 
-
 // CBasePlayer::Observer_IsValidTarget hook
 typedef IHookChainClass<class CBasePlayer *, class CBasePlayer, int, bool> IReGameHook_CBasePlayer_Observer_IsValidTarget;
 typedef IHookChainRegistryClass<class CBasePlayer *, class CBasePlayer, int, bool> IReGameHookRegistry_CBasePlayer_Observer_IsValidTarget;
@@ -157,6 +158,14 @@ typedef IVoidHookChainRegistryClass<class CBasePlayer, char *, char *> IReGameHo
 typedef IVoidHookChainClass<class CBasePlayer, char *, char *> IReGameHook_CBasePlayer_SetClientUserInfoName;
 typedef IVoidHookChainRegistryClass<class CBasePlayer, char *, char *> IReGameHookRegistry_CBasePlayer_SetClientUserInfoName;
 
+// CBasePlayer::HasRestrictItem hook
+typedef IHookChainClass<bool, class CBasePlayer, ItemID, ItemRestType> IReGameHook_CBasePlayer_HasRestrictItem;
+typedef IHookChainRegistryClass<bool, class CBasePlayer, ItemID, ItemRestType> IReGameHookRegistry_CBasePlayer_HasRestrictItem;
+
+// CBasePlayer::DropPlayerItem hook
+typedef IVoidHookChainClass<class CBasePlayer, const char *> IReGameHook_CBasePlayer_DropPlayerItem;
+typedef IVoidHookChainRegistryClass<class CBasePlayer, const char *> IReGameHookRegistry_CBasePlayer_DropPlayerItem;
+
 // CBaseAnimating::ResetSequenceInfo hook
 typedef IVoidHookChainClass<class CBaseAnimating> IReGameHook_CBaseAnimating_ResetSequenceInfo;
 typedef IVoidHookChainRegistryClass<class CBaseAnimating> IReGameHookRegistry_CBaseAnimating_ResetSequenceInfo;
@@ -176,10 +185,6 @@ typedef IVoidHookChainRegistry<class CBasePlayer *, struct entvars_s *, struct e
 // RoundEnd hook
 typedef IHookChain<bool, int, ScenarioEventEndRound, float> IReGameHook_RoundEnd;
 typedef IHookChainRegistry<bool, int, ScenarioEventEndRound, float> IReGameHookRegistry_RoundEnd;
-
-// CanBuyThis hook
-typedef IHookChain<bool, class CBasePlayer *, int> IReGameHook_CanBuyThis;
-typedef IHookChainRegistry<bool, class CBasePlayer *, int> IReGameHookRegistry_CanBuyThis;
 
 // InstallGameRules hook
 typedef IHookChain<class CGameRules *> IReGameHook_InstallGameRules;
@@ -336,13 +341,14 @@ public:
 	virtual IReGameHookRegistry_CBasePlayer_GiveShield* CBasePlayer_GiveShield() = 0;
 	virtual IReGameHookRegistry_CBasePlayer_SetClientUserInfoModel* CBasePlayer_SetClientUserInfoModel() = 0;
 	virtual IReGameHookRegistry_CBasePlayer_SetClientUserInfoName* CBasePlayer_SetClientUserInfoName() = 0;
+	virtual IReGameHookRegistry_CBasePlayer_HasRestrictItem* CBasePlayer_HasRestrictItem() = 0;
+	virtual IReGameHookRegistry_CBasePlayer_DropPlayerItem* CBasePlayer_DropPlayerItem() = 0;
 	virtual IReGameHookRegistry_CBaseAnimating_ResetSequenceInfo* CBaseAnimating_ResetSequenceInfo() = 0;
 
 	virtual IReGameHookRegistry_GetForceCamera* GetForceCamera() = 0;
 	virtual IReGameHookRegistry_PlayerBlind* PlayerBlind() = 0;
 	virtual IReGameHookRegistry_RadiusFlash_TraceLine* RadiusFlash_TraceLine() = 0;
 	virtual IReGameHookRegistry_RoundEnd* RoundEnd() = 0;
-	virtual IReGameHookRegistry_CanBuyThis* CanBuyThis() = 0;
 	virtual IReGameHookRegistry_InstallGameRules* InstallGameRules() = 0;
 	virtual IReGameHookRegistry_PM_Init* PM_Init() = 0;
 	virtual IReGameHookRegistry_PM_Move* PM_Move() = 0;

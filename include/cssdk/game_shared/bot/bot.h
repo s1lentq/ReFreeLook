@@ -35,10 +35,11 @@ public:
 	virtual void Spawn() = 0;
 
 	// invoked when injured by something
-	virtual int TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType) = 0;
+	virtual BOOL TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType) = 0;
 
 	// invoked when killed
 	virtual void Killed(entvars_t *pevAttacker, int iGib) = 0;
+	virtual BOOL IsNetClient() = 0;
 	virtual void Think() = 0;
 	virtual BOOL IsBot() = 0;
 	virtual Vector GetAutoaimVector(float flDelta) = 0;
